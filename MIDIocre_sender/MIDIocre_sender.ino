@@ -1,15 +1,19 @@
 #include <esp_now.h>
 #include <WiFi.h>
 
-uint8_t broadcastAddress[] = {0x24, 0x0A, 0xC4, 0xEE, 0x0D, 0x44};
+#define FORCE_SENSOR_PIN 32
+
+uint8_t broadcastAddress[] = {0x78, 0x21, 0x84, 0x8C, 0xC2, 0xBC};
 
 //Must match the receiver structure
 typedef struct struct_message {
-    char a[32];
-    unsigned long timestamp;
+  int16_t x;
+  int16_t y;
+  int16_t z;
+  int16_t pressure1;  
 } struct_message;
 
-struct_message myData;
+struct_message sensorData;
 
 esp_now_peer_info_t peerInfo;
 
@@ -49,9 +53,10 @@ void setup(){
 }
  
 void loop(){
-  strcpy(myData.a, "Hello world!");
-  myData.timestamp = millis();
-  esp_err_t result = esp_now_send(broadcastAddress, (uint8_t *) &myData, sizeof(myData));
+  int16_t analogReading = analogRead(FORCE_SENSOR_PIN);
+  sensorData.pressure1 = analogReading;
+  Serial.println(analogReading);
+  esp_err_t result = esp_now_send(broadcastAddress, (uint8_t *) &sensorData, sizeof(sensorData));
    
   if (result == ESP_OK) {
     Serial.println("Sent with success");
@@ -59,5 +64,5 @@ void loop(){
   else {
     Serial.println("Error sending the data");
   }
-  delay(2000);
+  delay(100);
 }
