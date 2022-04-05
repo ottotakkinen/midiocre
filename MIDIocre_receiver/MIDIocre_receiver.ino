@@ -11,6 +11,7 @@ typedef struct struct_message {
   int16_t y;
   int16_t z;
   int16_t pressure1;  
+  int16_t pressure2;
 } struct_message;
 
 struct_message sensorData;
@@ -18,17 +19,17 @@ struct_message sensorData;
 // callback function that will be executed when data is received
 void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
   memcpy(&sensorData, incomingData, sizeof(sensorData));
-  Serial.print("Bytes received: ");
+  send(&sensorData);
+  /*Serial.print("Bytes received: ");
   Serial.println(len);
   Serial.print("Pressure 1: ");
-  Serial.println(sensorData.pressure1);
+  Serial.println(sensorData.pressure1);*/
   //Serial2.write((char *)incomingData);
 }
  
 void setup() {
   // Initialize Serial Monitor
-  Serial.begin(115200);
-  Serial2.begin(28800, SERIAL_8N1, RXp2, TXp2);
+  Serial2.begin(9600, SERIAL_8N1, RXp2, TXp2);
   
   // Set device as a Wi-Fi Station
   WiFi.mode(WIFI_STA);
@@ -45,7 +46,7 @@ void setup() {
 }
  
 void loop() {
-  send(&sensorData);
+  //send(&sensorData);
   delay(100);
 }
 
